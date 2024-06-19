@@ -1,0 +1,6 @@
+#update column from another table column
+UPDATE finanse f
+set kurs  = ct.kurs 
+FROM currency_table ct
+where f.waluta_wymiana  = ct.waluta ;
+
