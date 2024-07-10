@@ -14,7 +14,7 @@ BEGIN
   SET kurs = ct.kurs
     FROM currency_table ct
     WHERE ct.waluta = waluta_wymiana;
-  RETURN NULL
+  RETURN NULL;
 END;
 $function$
 ;
