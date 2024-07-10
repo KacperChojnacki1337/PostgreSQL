@@ -5,19 +5,21 @@ FROM currency_table ct
 where f.waluta_wymiana  = ct.waluta ;
 
 #create function + trigger
-CREATE OR REPLACE FUNCTION update_finanse_upon_currency_change()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION public.update_finanse_upon_currency_change()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $function$
 BEGIN
-    UPDATE finanse f
-    SET kurs = NEW.kurs
+  UPDATE finanse2
+  SET kurs = ct.kurs
     FROM currency_table ct
-    WHERE f.waluta_wymiana = NEW.waluta;
-
-    RETURN NEW;
+    WHERE ct.waluta = waluta_wymiana;
 END;
-$$ LANGUAGE plpgsql;
+$function$
+;
 
-CREATE TRIGGER update_finanse_trigger
-AFTER UPDATE ON currency_table
-FOR EACH ROW
-EXECUTE PROCEDURE update_finanse_upon_currency_change();
+create trigger update_finanse_trigger after
+insert
+    on
+    public.currency_table for each row
+    when ((pg_trigger_depth() < 1)) execute function update_finanse_upon_currency_change()
